@@ -1,5 +1,6 @@
 {
   "welcome": "Bienvenue dans l'extension {{target}}!",
   "iWouldLikeAFreeGiftWithMyOrder": "Je souhaite recevoir un cadeau gratuit avec ma commande",
+  "freeShippingMessage": "Félicitations! Profitez de la livraison gratuite",
   "attributeChangesAreNotSupported": "Les modifications d'attribut ne sont pas prises en charge dans cette commande"
 }
