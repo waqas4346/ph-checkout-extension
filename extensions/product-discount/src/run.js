@@ -21,36 +21,62 @@ const EMPTY_DISCOUNT = {
  * @returns {FunctionRunResult}
  */
 export function run(input) {
-  const targets = input.cart.lines
-    // Only include cart lines with a quantity of two or more
-    .filter((line) => line.quantity >= 2)
-    .map((line) => {
-      return /** @type {Target} */ ({
-        // Use the cart line ID to create a discount target
-        cartLine: {
-          id: line.id,
-        },
-      });
-    });
-  if (!targets.length) {
-    // You can use STDERR for debug logs in your function
-    console.error("No cart lines qualify for volume discount.");
-    return EMPTY_DISCOUNT;
-  }
 
-  return {
-    discounts: [
-      {
-        // Apply the discount to the collected targets
-        targets,
-        // Define a percentage-based discount
-        value: {
-          percentage: {
-            value: "10.0",
-          },
-        },
+  const mainProductSku = "fbmd-01";
+  const addonProductSku = "hook-1";
+
+  const fixedAmountDiscount = "2";
+  const percentageDiscount = "100";
+
+  const isMainProduct = input.cart.lines.find(item => item.merchandise?.sku === mainProductSku)
+  
+  const targets = input.cart.lines.filter(item => item.merchandise?.sku === addonProductSku)?.map(line => {
+    return /** @type {Target} */ ({
+      // Use the cart line ID to create a discount target
+      cartLine: {
+        id: line.id,
       },
-    ],
-    discountApplicationStrategy: DiscountApplicationStrategy.First,
-  };
+    });
+  })
+  if (Number(isMainProduct?.quantity) === 1) {
+   
+    if (targets.length) {
+      return {
+        discounts: [
+          {
+            // Apply the discount to the collected targets
+            targets,
+            // Define a percentage-based discount
+            value: {
+              fixedAmount: {
+                amount: fixedAmountDiscount,
+              },
+            },
+          },
+        ],
+        discountApplicationStrategy: DiscountApplicationStrategy.First,
+      };
+    }
+
+  } else if (Number(isMainProduct?.quantity) > 1) {
+    if (!!targets.length) {
+      return {
+        discounts: [
+          {
+            // Apply the discount to the collected targets
+            targets,
+            // Define a percentage-based discount
+            value: {
+              percentage: {
+                value: percentageDiscount,
+              },
+            },
+          },
+        ],
+        discountApplicationStrategy: DiscountApplicationStrategy.First,
+      };
+    }
+
+  }
+  return EMPTY_DISCOUNT;
 }
